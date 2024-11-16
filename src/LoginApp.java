@@ -7,10 +7,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+
 public class LoginApp extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
-    private static final String DB_URL = "jdbc:mysql://localhost:3306";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/mahad";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "mahadstassignment";
 
@@ -56,7 +57,7 @@ public class LoginApp extends JFrame {
         }
     }
 
-    private String authenticateUser(String email) {
+    private String authenticateUser(String email) throws ClassNotFoundException {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             String query = "SELECT name FROM User WHERE Email = ?";
@@ -75,10 +76,23 @@ public class LoginApp extends JFrame {
         return userName;
     }
 
-    public static void main(String[] args) {
+    private static boolean testDBConnection() {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static void main(String[] args) throws ClassNotFoundException {
+        if (!testDBConnection()) {
+            System.out.println("Failed to connect to database");
+            return;
+        }
         SwingUtilities.invokeLater(() -> {
             LoginApp loginApp = new LoginApp();
             loginApp.setVisible(true);
         });
     }
 }
+
