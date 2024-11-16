@@ -14,35 +14,36 @@ public class LoginAppTest {
     private static void testValidUserLogin() throws ClassNotFoundException {
         LoginApp app = new LoginApp();
         String result = app.authenticateUser("johndoe@example.com", "password123");
-        assert result != null && result.equals("John Doe") : "Test Valid User Login Failed";
+        assert result != null : "Test Valid User Login Failed - User should be found";
+        assert result.equals("John Doe") : "Test Valid User Login Failed - Incorrect user name";
         System.out.println("Test Valid User Login Passed");
     }
 
     private static void testInvalidUserLogin() throws ClassNotFoundException {
         LoginApp app = new LoginApp();
         String result = app.authenticateUser("invalid@example.com", "invalidpassword");
-        assert result == null : "Test Invalid User Login Failed";
+        assert result == null : "Test Invalid User Login Failed - User should not be found";
         System.out.println("Test Invalid User Login Passed");
     }
 
     private static void testEmptyEmailField() throws ClassNotFoundException {
         LoginApp app = new LoginApp();
         String result = app.authenticateUser("", "password123");
-        assert result == null : "Test Empty Email Field Failed";
+        assert result == null : "Test Empty Email Field Failed - User should not be found";
         System.out.println("Test Empty Email Field Passed");
     }
 
     private static void testEmptyPasswordField() throws ClassNotFoundException {
         LoginApp app = new LoginApp();
         String result = app.authenticateUser("johndoe@example.com", "");
-        assert result == null : "Test Empty Password Field Failed";
+        assert result == null : "Test Empty Password Field Failed - User should not be found";
         System.out.println("Test Empty Password Field Passed");
     }
 
     private static void testSQLInjectionAttempt() throws ClassNotFoundException {
         LoginApp app = new LoginApp();
         String result = app.authenticateUser("johndoe@example.com", "' OR '1'='1");
-        assert result == null : "Test SQL Injection Attempt Failed";
+        assert result == null : "Test SQL Injection Attempt Failed - User should not be found";
         System.out.println("Test SQL Injection Attempt Passed");
     }
 }
