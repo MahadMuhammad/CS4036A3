@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-
 public class LoginApp extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
@@ -46,9 +45,19 @@ public class LoginApp extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String email = emailField.getText();
-            String password = new String(passwordField.getPassword()); // Password is ignored for validation
+            String password = new String(passwordField.getPassword());
 
-            String userName = authenticateUser(email);
+            if (email.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Email and Password cannot be empty.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String userName = null;
+            try {
+                userName = authenticateUser(email, password);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
             if (userName != null) {
                 JOptionPane.showMessageDialog(null, "Welcome, " + userName + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -57,12 +66,13 @@ public class LoginApp extends JFrame {
         }
     }
 
-    private String authenticateUser(String email) throws ClassNotFoundException {
+    String authenticateUser(String email, String password) throws ClassNotFoundException {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT name FROM User WHERE Email = ?";
+            String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, email);
+            stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -84,6 +94,7 @@ public class LoginApp extends JFrame {
             return false;
         }
     }
+
     public static void main(String[] args) throws ClassNotFoundException {
         if (!testDBConnection()) {
             System.out.println("Failed to connect to database");
@@ -95,4 +106,3 @@ public class LoginApp extends JFrame {
         });
     }
 }
-
