@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+
 public class LoginApp extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
@@ -67,6 +68,10 @@ public class LoginApp extends JFrame {
     }
 
     String authenticateUser(String email, String password) throws ClassNotFoundException {
+        if (email.isEmpty() || password.isEmpty()) {
+            throw new RuntimeException("Email and Password cannot be empty.");
+        }
+
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
